@@ -1,6 +1,44 @@
 # Insurance Report Data Extraction (保险报告数据提取)
 
-This example demonstrates how to extract structured data from Chinese insurance company solvency reports using Gemini's multimodal capabilities.
+This example demonstrates how to extract structured data from Chinese insurance company solvency reports using **multiple LLM backends**.
+
+## 🎯 Supported LLM Backends
+
+This example supports multiple approaches:
+
+### **Vision LLMs** (一步法 - Direct Image Processing)
+- ✅ **Gemini** (Google) - Recommended, best cost/performance
+- ✅ **GPT-4V/GPT-4o** (OpenAI) - High accuracy
+- ✅ **Claude 3.5** (Anthropic) - Highest accuracy
+- ✅ **LLaVA** (Ollama, Local) - Free, offline
+
+### **OCR + Text LLMs** (两步法 - OCR then LLM)
+- ✅ **PaddleOCR + Qwen** (Ollama) - Free, offline, great for Chinese
+- ✅ **PaddleOCR + Gemini** - Low cost, high accuracy
+- ✅ Any OCR (PaddleOCR/EasyOCR/Tesseract) + Any text LLM
+
+📊 **See [LLM_COMPARISON.md](LLM_COMPARISON.md)** for detailed comparison of backends, costs, and accuracy.
+
+## Quick Start Guide
+
+### Option 1: Gemini (Recommended - Easy Setup)
+```bash
+pip install google-genai
+export LANGEXTRACT_API_KEY="your-key"
+python extract_insurance_report.py --image report.png
+```
+
+### Option 2: Completely Free/Offline
+```bash
+pip install paddleocr paddlepaddle ollama
+ollama pull qwen2.5:7b
+python extract_multi_llm.py --image report.png --backend ocr-llm --ocr paddleocr --llm ollama
+```
+
+### Option 3: Multiple LLM Support
+```bash
+python extract_multi_llm.py --image report.png --backend claude-vision  # or openai-vision, ollama-vision
+```
 
 ## Overview
 
@@ -88,6 +126,56 @@ python extract_insurance_report.py \
 - `--csv`: Export to CSV file for easier analysis
 - `--model`: Gemini model (default: `gemini-2.0-flash-exp`)
 - `--api-key`: API key (or use env var `LANGEXTRACT_API_KEY`)
+
+### Using Different LLM Backends
+
+For more flexibility, use `extract_multi_llm.py` which supports multiple LLMs:
+
+#### Gemini (Default)
+```bash
+python extract_multi_llm.py --image report.png --backend gemini
+```
+
+#### OpenAI GPT-4V
+```bash
+python extract_multi_llm.py --image report.png --backend openai-vision --api-key $OPENAI_API_KEY
+```
+
+#### Claude Vision
+```bash
+python extract_multi_llm.py --image report.png --backend claude-vision --api-key $ANTHROPIC_API_KEY
+```
+
+#### Local Ollama (LLaVA) - Free & Offline
+```bash
+ollama pull llava:13b
+python extract_multi_llm.py --image report.png --backend ollama-vision --model llava:13b
+```
+
+#### OCR + Local LLM - Free & Offline (Recommended for Privacy)
+```bash
+# Install: pip install paddleocr paddlepaddle ollama
+ollama pull qwen2.5:7b
+
+python extract_multi_llm.py \
+  --image report.png \
+  --backend ocr-llm \
+  --ocr paddleocr \
+  --llm ollama \
+  --model qwen2.5:7b
+```
+
+#### OCR + Cloud LLM - Low Cost
+```bash
+python extract_multi_llm.py \
+  --image report.png \
+  --backend ocr-llm \
+  --ocr paddleocr \
+  --llm gemini \
+  --model gemini-2.5-flash
+```
+
+**See [LLM_COMPARISON.md](LLM_COMPARISON.md) for detailed comparison, installation guides, and cost analysis.**
 
 ## Output Format
 

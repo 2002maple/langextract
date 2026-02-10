@@ -1,0 +1,62 @@
+# Core requirements for multi-LLM insurance report extraction
+
+# ============================================================================
+# Vision LLMs (一步法 - 直接处理图片)
+# ============================================================================
+
+# Google Gemini (推荐 - 性价比最高)
+google-genai>=1.39.0
+
+# OpenAI GPT-4V (可选)
+# openai>=1.50.0
+
+# Anthropic Claude (可选)
+# anthropic>=0.25.0
+
+# Ollama (本地模型 - 完全免费)
+# ollama>=0.1.0
+
+# ============================================================================
+# OCR Engines (两步法第一步 - 文本提取)
+# ============================================================================
+
+# PaddleOCR (推荐 - 中文最佳)
+# paddleocr>=2.7.0
+# paddlepaddle>=2.5.0  # CPU版本
+# paddlepaddle-gpu>=2.5.0  # GPU版本 (可选，需要CUDA)
+
+# EasyOCR (可选)
+# easyocr>=1.7.0
+
+# Tesseract OCR (可选)
+# pytesseract>=0.3.10
+# Pillow>=10.0.0
+
+# ============================================================================
+# 推荐的安装组合
+# ============================================================================
+
+# 组合1: Gemini Vision (最简单，推荐新手)
+# pip install google-genai
+
+# 组合2: 完全免费离线方案
+# pip install paddleocr paddlepaddle ollama
+
+# 组合3: 高质量云服务方案
+# pip install google-genai openai anthropic
+
+# 组合4: 混合方案 (OCR本地 + LLM云端)
+# pip install paddleocr paddlepaddle google-genai
+
+# ============================================================================
+# 使用说明
+# ============================================================================
+
+# 1. 仅使用 Gemini (推荐开始)
+#    pip install -r requirements.txt
+
+# 2. 安装所有依赖 (体验所有功能)
+#    sed 's/^# //' requirements-all.txt | pip install -r /dev/stdin
+
+# 3. 按需安装
+#    根据上面的组合选择，只安装需要的包
