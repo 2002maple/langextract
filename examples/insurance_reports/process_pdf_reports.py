@@ -470,10 +470,20 @@ def export_to_csv(jsonl_file: str, csv_file: str = "solvency_data.csv"):
     print("No data to export to CSV")
     return
 
+  # Collect all unique field names from all rows
+  # (different PDFs may have different table column names)
+  all_fieldnames = set()
+  for row in csv_rows:
+    all_fieldnames.update(row.keys())
+
+  # Sort fieldnames: fixed columns first, then dynamic columns
+  fixed_columns = ["pdf_file", "company_name", "report_period", "table_title", "source_page"]
+  dynamic_columns = sorted(all_fieldnames - set(fixed_columns))
+  fieldnames = fixed_columns + dynamic_columns
+
   # Write CSV
   with open(csv_file, "w", encoding="utf-8-sig", newline="") as f:
-    fieldnames = list(csv_rows[0].keys())
-    writer = csv.DictWriter(f, fieldnames=fieldnames)
+    writer = csv.DictWriter(f, fieldnames=fieldnames, extrasaction='ignore')
     writer.writeheader()
     writer.writerows(csv_rows)
 

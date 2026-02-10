@@ -328,10 +328,19 @@ def export_to_csv(jsonl_file: str, csv_file: str = "solvency_data.csv"):
     print("没有数据可导出到 CSV")
     return
 
+  # 收集所有唯一的字段名（不同 PDF 的表格列名可能不同）
+  all_fieldnames = set()
+  for row in csv_rows:
+    all_fieldnames.update(row.keys())
+
+  # 字段排序：固定列在前，动态列按字母排序
+  fixed_columns = ["pdf_file", "company_name", "report_period", "table_title", "source_page"]
+  dynamic_columns = sorted(all_fieldnames - set(fixed_columns))
+  fieldnames = fixed_columns + dynamic_columns
+
   # 写入 CSV
   with open(csv_file, "w", encoding="utf-8-sig", newline="") as f:
-    fieldnames = list(csv_rows[0].keys())
-    writer = csv.DictWriter(f, fieldnames=fieldnames)
+    writer = csv.DictWriter(f, fieldnames=fieldnames, extrasaction='ignore')
     writer.writeheader()
     writer.writerows(csv_rows)
 
