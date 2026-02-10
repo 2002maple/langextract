@@ -1,9 +1,15 @@
-# Requirements for insurance report extraction example
+# Core requirements for insurance report extraction
 google-genai>=1.39.0
 
-# Optional: for PDF to image conversion
-# pdf2image>=1.17.0
-# Pillow>=10.0.0
+# PDF processing (for batch PDF processing)
+pdf2image>=1.17.0
+Pillow>=10.0.0
+tqdm>=4.64.0  # Progress bars
 
-# Optional: for advanced PDF processing
-# pdfplumber>=0.11.0
+# Alternative PDF processing (choose one)
+# pdfplumber>=0.11.0  # Alternative to pdf2image
+
+# Note: pdf2image also requires poppler-utils to be installed on your system:
+#   Ubuntu/Debian: apt-get install poppler-utils
+#   macOS: brew install poppler
+#   Windows: Download from https://github.com/oschwartz10612/poppler-windows/releases
