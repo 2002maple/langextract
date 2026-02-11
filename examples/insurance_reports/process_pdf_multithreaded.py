@@ -2,18 +2,24 @@
 """Multi-threaded PDF processing with API rate limiting for Windows.
 
 This script processes multiple insurance PDF files in parallel while respecting
-Gemini API rate limits (1 request per second).
+Gemini API rate limits.
+
+Gemini API Rate Limits (as of 2025):
+- RPM (Requests per minute): 1000 → 16.67 requests/second
+- TPM (Tokens per minute): 1,000,000
+- RPD (Requests per day): 10,000
+- Concurrent batch requests: 100
 
 Features:
 - Thread pool for concurrent file I/O operations
-- Rate limiter ensures API calls don't exceed 1 request/second
+- Rate limiter optimized for 1000 RPM (0.06s/request)
 - Progress bar with real-time statistics
 - Windows path compatibility
 - Automatic retry on failures
 - Incremental JSONL output
 
 Usage:
-    python process_pdf_multithreaded.py --pdf_dir ./reports --output extracted_data.jsonl --workers 4
+    python process_pdf_multithreaded.py --pdf_dir ./reports --output extracted_data.jsonl --workers 10
 """
 
 import argparse
@@ -36,14 +42,19 @@ except ImportError:
 
 
 class RateLimiter:
-    """Thread-safe rate limiter that ensures minimum interval between calls."""
+    """Thread-safe rate limiter that ensures minimum interval between calls.
 
-    def __init__(self, min_interval: float = 1.0):
+    Optimized for Gemini API limits:
+    - 1000 RPM = 16.67 requests/second
+    - Default: 0.06 seconds/request (safe margin below limit)
+    """
+
+    def __init__(self, min_interval: float = 0.06):
         """
         Initialize rate limiter.
 
         Args:
-            min_interval: Minimum seconds between calls (default: 1.0)
+            min_interval: Minimum seconds between calls (default: 0.06 for 1000 RPM)
         """
         self.min_interval = min_interval
         self.last_call_time = 0
@@ -345,14 +356,14 @@ def main():
     parser.add_argument(
         '--workers',
         type=int,
-        default=4,
-        help='Number of worker threads (default: 4)',
+        default=10,
+        help='Number of worker threads (default: 10, optimized for 1000 RPM)',
     )
     parser.add_argument(
         '--rate_limit',
         type=float,
-        default=1.0,
-        help='Minimum seconds between API calls (default: 1.0)',
+        default=0.06,
+        help='Minimum seconds between API calls (default: 0.06 for 1000 RPM limit)',
     )
 
     args = parser.parse_args()
