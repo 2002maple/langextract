@@ -119,8 +119,8 @@ def build_html_visualization(reports_data: list[dict]) -> str:
 
     # Add report options
     for idx, report_info in enumerate(all_indicators):
-        company = html.escape(report_info['company'])
-        period = html.escape(report_info['period'])
+        company = html.escape(report_info['company'] or '未知公司')
+        period = html.escape(report_info['period'] or '未知期间')
         html_parts.append(
             f'        <option value="{idx}">{company} - {period}</option>'
         )
@@ -376,9 +376,9 @@ def _get_javascript_code() -> str:
 
       // Basic information card
       html += '<div class="info-card">';
-      html += '<p><strong>📋 公司名称：</strong>' + escapeHtml(report.company) + '</p>';
-      html += '<p><strong>📅 报告期间：</strong>' + escapeHtml(report.period) + '</p>';
-      html += '<p><strong>📄 文件名称：</strong>' + escapeHtml(report.pdf_file) + '</p>';
+      html += '<p><strong>📋 公司名称：</strong>' + escapeHtml(report.company || '未知公司') + '</p>';
+      html += '<p><strong>📅 报告期间：</strong>' + escapeHtml(report.period || '未知期间') + '</p>';
+      html += '<p><strong>📄 文件名称：</strong>' + escapeHtml(report.pdf_file || '未知文件') + '</p>';
       html += '</div>';
 
       // Key indicators
@@ -458,8 +458,11 @@ def _get_javascript_code() -> str:
     }
 
     function escapeHtml(text) {
+      if (text === null || text === undefined) {
+        return '';
+      }
       const div = document.createElement('div');
-      div.textContent = text;
+      div.textContent = String(text);
       return div.innerHTML;
     }
 
